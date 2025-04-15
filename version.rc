@@ -1,0 +1,27 @@
+VSVersionInfo VERSIONINFO
+ FILEVERSION 4,1,0,0
+ PRODUCTVERSION 4,1,0,0
+ FILEFLAGSMASK 0x3f
+ FILEFLAGS 0x0
+ FILEOS 0x40004
+ FILETYPE 0x1
+ FILESUBTYPE 0x0
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904B0"
+        BEGIN
+            VALUE "CompanyName", "Salem corporation"
+            VALUE "FileDescription", "Salem Explorer 4.1"
+            VALUE "FileVersion", "4.1"
+            VALUE "InternalName", "Salem Explorer"
+            VALUE "OriginalFilename", "Salem Explorer 4.1.exe"
+            VALUE "ProductName", "Salem Explorer"
+            VALUE "ProductVersion", "4.1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x0409, 1200
+    END
+END

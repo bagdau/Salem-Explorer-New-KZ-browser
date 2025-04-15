@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+    <assemblyIdentity 
+        version="1.0.0.0"
+        processorArchitecture="*" 
+        name="Salem.Browser" 
+        type="win32"/>
+    
+    <!-- Описание приложения -->
+    <description>Казахстанский веб-браузер Salem, разработанный мини-стартап-корпорацией Salem. Автор: Бағдаулет Коптилеу.</description>
+
+    <!-- Совместимость с Windows -->
+    <compatibility xmlns="urn:schemas-microsoft-com:compatibility.v1">
+        <application>
+            <supportedOS Id="{e2011457-1546-43c5-a5fe-008deee3d3f0}"/> <!-- Windows Vista -->
+            <supportedOS Id="{35138b9a-5d96-4fbd-8e2d-a2440225f93a}"/> <!-- Windows 7 -->
+            <supportedOS Id="{4a7b290a-df34-4e26-a325-a66e506fd3dd}"/> <!-- Windows 8 -->
+            <supportedOS Id="{8e0f7a12-bfb3-4fe8-b9a5-48fd50a15a9a}"/> <!-- Windows 10 -->
+            <supportedOS Id="{1f6766f6-5f0e-4183-8ad1-2a533f8e0bfc}"/> <!-- Windows 11 -->
+        </application>
+    </compatibility>
+
+    <!-- Требование админ-прав -->
+    <trustInfo xmlns="urn:schemas-microsoft-com:asm.v3">
+        <security>
+            <requestedPrivileges>
+                <requestedExecutionLevel level="asInvoker" uiAccess="false"/>
+            </requestedPrivileges>
+        </security>
+    </trustInfo>
+
+    <!-- Поддержка DPI и визуальных эффектов Windows -->
+    <application xmlns="urn:schemas-microsoft-com:asm.v3">
+        <windowsSettings>
+            <dpiAware>true</dpiAware>
+            <autoElevate>false</autoElevate>
+        </windowsSettings>
+    </application>
+</assembly>

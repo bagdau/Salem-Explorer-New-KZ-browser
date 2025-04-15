@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Жекелеу параметрлері</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            transition: background 0.5s, color 0.5s;
+            background: #222;
+            color: #fff;
+            text-align: center;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.7);
+        }
+        select, input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: none;
+        }
+        button {
+            background: #ff0066;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #ff3388;
+        }
+        .background-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        .background-option {
+            width: 80px;
+            height: 50px;
+            border-radius: 5px;
+            overflow: hidden;
+            cursor: pointer;
+            position: relative;
+            border: 2px solid transparent;
+            transition: transform 0.3s;
+        }
+        .background-option img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .background-option.selected {
+            border: 2px solid #00ff7f;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Жекелеу параметрлері</h2>
+        
+        <label for="theme">Тақырыпты таңдаңыз:</label>
+        <select id="theme">
+            <option value="light">Жарық</option>
+            <option value="dark">Қараңғы</option>
+            <option value="neon">Неон</option>
+        </select>
+        
+        <label for="bg">Беттің түсі:</label>
+        <input type="color" id="bg" value="#222222">
+        
+        <label for="font">Қаріпті таңдаңыз:</label>
+        <select id="font">
+            <option value="Arial">Arial</option>
+            <option value="Verdana">Verdana</option>
+            <option value="Courier New">Courier New</option>
+        </select>
+
+        <label>Фон суретін таңдаңыз:</label>
+        <div class="background-options" id="backgroundOptions"></div>
+        <button onclick="saveSettings()">Қолдану</button>
+
+        <button onclick="saveSettings()">Қолдану</button>
+    </div>
+    
+    <script>
+        function saveSettings() {
+            const theme = document.getElementById('theme').value;
+            const bgColor = document.getElementById('bg').value;
+            const font = document.getElementById('font').value;
+            
+            localStorage.setItem('theme', theme);
+            localStorage.setItem('bgColor', bgColor);
+            localStorage.setItem('font', font);
+            
+            applySettings();
+        }
+        
+        function applySettings() {
+            const theme = localStorage.getItem('theme');
+            const bgColor = localStorage.getItem('bgColor');
+            const font = localStorage.getItem('font');
+            const selectedBackground = localStorage.getItem('selectedBackground');
+            
+            if (theme) {
+                if (theme === 'light') {
+                    document.body.style.color = '#000';
+                    document.body.style.background = '#f5f5f5';
+                } else if (theme === 'dark') {
+                    document.body.style.color = '#fff';
+                    document.body.style.background = '#222';
+                } else if (theme === 'neon') {
+                    document.body.style.color = '#ff0066';
+                    document.body.style.background = '#000';
+                }
+            }
+            
+            if (bgColor) {
+                document.body.style.background = bgColor;
+            }
+            if (font) {
+                document.body.style.fontFamily = font;
+            }
+            if (selectedBackground) {
+                document.body.style.backgroundImage = `url('${selectedBackground}')`;
+            }
+        }
+
+        const backgrounds = [
+            'img/Степь.jpeg',
+            'img/GreenField.jpg',
+            'img/BigAlmaty.jpg',
+            'img/MinPhoto.png',
+            'img/Оқжетпес.jpg'
+        ];
+        
+        const backgroundOptions = document.getElementById('backgroundOptions');
+        
+        backgrounds.forEach(src => {
+            const div = document.createElement('div');
+            div.classList.add('background-option');
+            div.innerHTML = `<img src="${src}" alt="Фон">`;
+            div.onclick = () => setBackground(src, div);
+            backgroundOptions.appendChild(div);
+        });
+        
+        function setBackground(src, element) {
+            localStorage.setItem('selectedBackground', src);
+            localStorage.setItem('applyToMainPage', 'true'); // Флаг для главной страницы
+            document.querySelectorAll('.background-option').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+            applySettings();
+        }
+        
+        window.onload = applySettings;
+    </script>
+</body>
+</html>

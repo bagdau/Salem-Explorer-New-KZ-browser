@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Журнал</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f4f4; padding: 20px; }
+        h2 { text-align: center; }
+        ul { list-style-type: none; padding: 0; }
+        li { background: white; margin: 5px 0; padding: 10px; border-radius: 5px; }
+        a { text-decoration: none; color: #007bff; }
+    </style>
+</head>
+<body>
+    <h2>Шолу тарихы</h2>
+    <ul id="history-list"></ul>
+
+    <script>
+        fetch("history_data.json")
+            .then(response => response.json())
+            .then(data => {
+                let list = document.getElementById("history-list");
+                data.forEach(entry => {
+                    let item = document.createElement("li");
+                    item.innerHTML = `<a href="${entry.url}" target="_blank">${entry.title}</a> - ${entry.date}`;
+                    list.appendChild(item);
+                });
+            })
+            .catch(error => console.error("Тарихты жүктеу қатесі:", error));
+    </script>
+</body>
+</html>

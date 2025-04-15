@@ -1,0 +1,167 @@
+<!DOCTYPE HTML>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSC All.InNote</title>
+    <link rel="stylesheet" href="css/styleForAllNote.css">
+    <link rel="icon" href="img/icons/AllNote.ico" type="image/x-icon">
+</head>
+<body>
+    <header class="toolbar">
+        <h1>SSC All.InNote</h1>
+        <div class="tools">
+            <button id="bold">B</button>
+            <button id="italic">I</button>
+            <button id="underline">U</button>
+            <button id="align-left">⬅</button>
+            <button id="align-center">⬆</button>
+            <button id="align-right">➡</button>
+            <select id="font-size">
+                <option value="12px">12px</option>
+                <option value="16px">16px</option>
+                <option value="20px">20px</option>
+                <option value="24px">24px</option>
+            </select>
+            <select id="font-family">
+                <option value="Arial">Arial</option>
+                <option value="Times New Roman">Times New Roman</option>
+                <option value="Courier New">Courier New</option>
+                <option value="Verdana">Verdana</option>
+                <option value="Georgia">Georgia</option>
+                <option value="Trebuchet MS">Trebuchet MS</option>
+                <option value="Comic Sans MS">Comic Sans MS</option>
+                <option value="Impact">Impact</option>
+            </select>
+            <button id="bullet-list">• List</button>
+            <button id="number-list">1. List</button>
+            <input type="color" id="highlight-color">
+            <button id="insert-table">📊</button>
+            <button id="theme-toggle">🌙</button>
+            <button id="upload-image">🖼</button>
+            <button id="voice">🎤</button>
+            <button id="save-note" class="save-button">💾 Сақтау</button>
+        </div>
+    </header>
+    
+    <main class="book-container">
+        <div class="book">
+            <textarea id="note-text" placeholder="Өзіңіздің жазбаңызды жазыңыз..."></textarea>
+        </div>
+    </main>
+    
+    <script>
+        const noteText = document.getElementById("note-text");
+        const saveBtn = document.getElementById("save-note");
+        const themeToggle = document.getElementById("theme-toggle");
+        const recognition = new webkitSpeechRecognition();
+        recognition.lang = "kk-KZ";
+        
+        noteText.value = localStorage.getItem("savedNote") || "";
+        
+        saveBtn.addEventListener("click", () => {
+            localStorage.setItem("savedNote", noteText.value);
+            alert("Жазба сақталды!");
+        });
+        
+        setInterval(() => {
+            localStorage.setItem("savedNote", noteText.value);
+        }, 5000);
+        
+        themeToggle.addEventListener("click", () => {
+            document.body.classList.toggle("dark-mode");
+        });
+        
+        document.getElementById("bold").addEventListener("click", () => {
+    document.execCommand("bold");
+});
+document.getElementById("italic").addEventListener("click", () => {
+    document.execCommand("italic");
+});
+document.getElementById("underline").addEventListener("click", () => {
+    document.execCommand("underline");
+});
+document.getElementById("bullet-list").addEventListener("click", () => {
+    document.execCommand("insertUnorderedList");
+});
+document.getElementById("number-list").addEventListener("click", () => {
+    document.execCommand("insertOrderedList");
+});
+document.getElementById("highlight-color").addEventListener("change", (e) => {
+    document.execCommand("backColor", false, e.target.value);
+});
+document.getElementById("font-size").addEventListener("change", (e) => {
+    document.execCommand("fontSize", false, e.target.value);
+});
+document.getElementById("font-family").addEventListener("change", (e) => {
+    document.execCommand("fontName", false, e.target.value);
+});
+
+// Вставка таблицы
+document.getElementById("insert-table").addEventListener("click", () => {
+    let table = document.createElement("table");
+    table.border = "1";
+    for (let i = 0; i < 3; i++) {
+        let row = table.insertRow();
+        for (let j = 0; j < 3; j++) {
+            let cell = row.insertCell();
+            cell.contentEditable = "true";
+            cell.innerHTML = "...";
+        }
+    }
+    document.getElementById("table-container").innerHTML = "";
+    document.getElementById("table-container").appendChild(table);
+});
+
+    </script>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(90deg, #6a11cb, #2575fc);
+            color: white;
+            text-align: center;
+            margin: 0;
+        }
+        .dark-mode {
+            background: #222;
+            color: white;
+        }
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #444;
+            padding: 10px;
+        }
+        .tools button, .tools select, .tools input {
+            padding: 10px;
+            margin: 5px;
+            background: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .book-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 80vh;
+        }
+        .book {
+            width: 60%;
+            height: 70%;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            color: black;
+            width: 706px;
+            height: 687.312;
+            margin-top: 273px;
+            margin-top: 272px;
+
+        }
+    </style>
+</body>
+</html>

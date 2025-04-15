@@ -1,0 +1,1037 @@
+from PyQt5.QtWidgets import QApplication, QMainWindow, QHBoxLayout, QVBoxLayout, QPushButton, QWidget, QLineEdit, QLabel, QTabWidget
+from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEnginePage
+from PyQt5.QtCore import QUrl, Qt
+import sys
+
+class SalemBrowser(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        self.setWindowTitle("Salem Corp. Browser")
+        self.setGeometry(100, 100, 1200, 800)
+        self.setStyleSheet("background-color: #1e1e2e; color: #ffffff;")  # RGB gamer-style theme
+
+        # Tab widget for multiple tabs
+        self.tabs = QTabWidget()
+        self.tabs.setDocumentMode(True)
+        self.tabs.setTabsClosable(True)
+        self.tabs.tabCloseRequested.connect(self.close_current_tab)
+        self.tabs.setStyleSheet("QTabBar::tab { height: 30px; width: 120px; background-color: #282a36; color: #f8f8f2; border: 1px solid #44475a; border-radius: 4px; padding: 5px; } QTabBar::tab:selected { background-color: #6272a4; }")
+
+        # Main layout
+        banner = QWidget()
+        banner_layout = QVBoxLayout()
+        banner.setStyleSheet("background-color: #282a36; border: 5px solid #ff007f; border-radius: 10px; padding: 10px;")
+
+        banner_label = QLabel("Welcome to Salem Corp. Browser")
+        banner_label.setStyleSheet("color: #ffffff; font-size: 24px; font-weight: bold; text-align: center;")
+        banner_label.setAlignment(Qt.AlignCenter)
+
+        self.browser = QWebEngineView()
+        self.browser.setUrl(QUrl("https://www.google.com"))  # Default start page
+        self.browser.setStyleSheet("border: 5px solid #ff007f; border-radius: 5px;")  # Thicker border
+
+        banner_layout.addWidget(banner_label)
+        banner_layout.addWidget(self.browser)
+        banner.setLayout(banner_layout)
+
+        # Add first tab
+        self.add_new_tab(QUrl("https://www.google.com"), "Home")
+
+        # Navigation bar
+        nav_bar = QWidget()
+        nav_layout = QHBoxLayout()
+        nav_bar.setStyleSheet("background-color: #282a36; padding: 5px; border: 1px solid #44475a;")
+
+        self.url_bar = QLineEdit()
+        self.url_bar.setPlaceholderText("URL мекенжай енгізіңіз...")
+        self.url_bar.setFixedHeight(25)  # Reduced height for minimalist design
+        self.url_bar.setMinimumWidth(300)  # Ensure the search bar has a minimum width
+        self.url_bar.returnPressed.connect(self.navigate_to_url)
+        self.url_bar.setStyleSheet("background-color: #44475a; color: #f8f8f2; border: 1px solid #6272a4; border-radius: 5px; padding: 5px;")
+
+        back_btn = QPushButton("◀Қайту")
+        back_btn.setFixedSize(80, 25)  # Reduced height for minimalist design
+        back_btn.clicked.connect(self.navigate_back)
+        back_btn.setStyleSheet(self.button_style())
+
+        forward_btn = QPushButton("Алға▶")
+        forward_btn.setFixedSize(80, 25)  # Reduced height for minimalist design
+        forward_btn.clicked.connect(self.navigate_forward)
+        forward_btn.setStyleSheet(self.button_style())
+
+        refresh_btn = QPushButton("Жаңарту🔄")
+        refresh_btn.setFixedSize(80, 25)  # Reduced height for minimalist design
+        refresh_btn.clicked.connect(self.refresh_page)
+        refresh_btn.setStyleSheet(self.button_style())
+
+        home_btn = QPushButton("Үй🏠")
+        home_btn.setFixedSize(80, 25)  # Reduced height for minimalist design
+        home_btn.clicked.connect(self.navigate_home)
+        home_btn.setStyleSheet(self.button_style())
+
+        new_tab_btn = QPushButton("Жаңа вкладка➕")
+        new_tab_btn.setFixedSize(80, 25)
+        new_tab_btn.clicked.connect(self.open_new_tab)
+        new_tab_btn.setStyleSheet(self.button_style())
+
+        pip_btn = QPushButton("PiP")
+        pip_btn.setFixedSize(80, 25)
+        pip_btn.clicked.connect(self.enable_picture_in_picture)
+        pip_btn.setStyleSheet(self.button_style())
+
+        # Add widgets to navigation bar
+        nav_layout.addWidget(back_btn)
+        nav_layout.addWidget(forward_btn)
+        nav_layout.addWidget(refresh_btn)
+        nav_layout.addWidget(home_btn)
+        nav_layout.addWidget(new_tab_btn)
+        nav_layout.addWidget(pip_btn)
+        nav_layout.addWidget(self.url_bar)
+
+        nav_bar.setLayout(nav_layout)
+
+        # Main widget
+        central_widget = QWidget()
+        central_layout = QVBoxLayout()
+        central_layout.addWidget(nav_bar)
+        central_layout.addWidget(self.tabs)
+
+        central_widget.setLayout(central_layout)
+        self.setCentralWidget(central_widget)
+
+    def button_style(self):
+        return (
+            "background-color: #6272a4; color: #f8f8f2; border: 1px solid #ff79c6; border-radius: 5px; "
+            "padding: 5px; font-weight: bold;"
+        )
+
+    def navigate_home(self):
+        self.url_bar.setText("file:///F:\SalemSOFTWARE\homepageSalem.html")
+        self.navigate_to_url()
+
+    def navigate_to_url(self):
+        url = self.url_bar.text()
+        if not url.startswith("http://") and not url.startswith("https://"):
+            url = "file://" + url
+        current_browser = self.tabs.currentWidget()
+        if current_browser:
+            current_browser.setUrl(QUrl(url))
+
+    def navigate_back(self):
+        current_browser = self.tabs.currentWidget()
+        if current_browser:
+            current_browser.back()
+
+    def navigate_forward(self):
+        current_browser = self.tabs.currentWidget()
+        if current_browser:
+            current_browser.forward()
+
+    def refresh_page(self):
+        current_browser = self.tabs.currentWidget()
+        if current_browser:
+            current_browser.reload()
+
+    def add_new_tab(self, qurl=None, label="New Tab"):
+        if qurl is None:
+            qurl = QUrl("https://www.google.com")
+        browser = QWebEngineView()
+        browser.setUrl(qurl)
+        self.tabs.addTab(browser, label)
+        self.tabs.setCurrentWidget(browser)
+
+    def open_new_tab(self):
+        self.add_new_tab()
+
+    def close_current_tab(self, index):
+        if self.tabs.count() > 1:
+            self.tabs.removeTab(index)
+
+    def enable_picture_in_picture(self):
+        current_browser = self.tabs.currentWidget()
+        if current_browser:
+            script = """
+            const video = document.querySelector('video');
+            if (video) {
+                if (document.pictureInPictureEnabled) {
+                    video.requestPictureInPicture().catch(error => {
+                        console.error('Error in PiP:', error);
+                    });
+                }
+            }
+            """
+            current_browser.page().runJavaScript(script)
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = SalemBrowser()
+    window.show()
+    sys.exit(app.exec_())
+
+
+
+
+
+
+HTML ----->: 
+
+         <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gaming Browser Homepage</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: url('img/BigAlmaty.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .container h1 {
+            margin-top: 0;
+            margin-bottom: 40px;
+            color: aliceblue;
+            text-align: center;
+        }
+        .search-bar {
+            display: flex;
+            margin-bottom: 30px;
+        }
+        .search-bar input {
+            width: 400px;
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #444;
+            border-radius: 5px 0 0 5px;
+            outline: none;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+        }
+        .search-bar button {
+            padding: 10px;
+            border: none;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+            background: #ff007c;
+            color: white;
+            font-size: 16px;
+        }
+        .search-bar button:hover {
+            background: #ff4da6;
+        }
+        .icons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+        .icon {
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+        .icon:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(255, 0, 124, 0.8);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Salem</h1>
+        <div class="search-bar">
+            <input type="text" placeholder="Осы жерден іздеу...">
+            <button>🔍</button>
+        </div>
+        <div class="icons">
+            <a href="https://www.youtube.com" target="_blank" class="icon"><img src="img/icons8-youtube-500.png" alt="YouTube"></a>
+            <a href="https://www.tiktok.com" target="_blank" class="icon"><img src="img/icons8-tiktok-240.png" alt="TikTok"></a>
+            <a href="https://www.google.com" target="_blank" class="icon"><img src="img/icons8-google-96.png" alt="Google"></a>
+            <a href="https://www.facebook.com" target="_blank" class="icon"><img src="img/icons8-facebook-144.png" alt="Facebook"></a>
+            <a href="https://www.instagram.com" target="_blank" class="icon"><img src="img/icons8-instagram-144.png" alt="Instagram"></a>
+            <a href="https://discord.com" target="_blank" class="icon"><img src="img/icons8-discord-100.png" alt="Discord"></a>
+        </div>
+    </div>
+    <script src="/scripts/settings.js"></script>
+</body>
+</html>
+
+
+from PyQt5.QtWidgets import QApplication, QMainWindow, QHBoxLayout, QVBoxLayout, QPushButton, QWidget, QLineEdit, QLabel, QTabWidget
+from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEnginePage
+from PyQt5.QtCore import QUrl, Qt
+import sys
+
+class SalemBrowser(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        self.setWindowTitle("Salem Corp. Browser")
+        self.setGeometry(100, 100, 1200, 800)
+        self.setStyleSheet("background-color: #1e1e2e; color: #ffffff;")
+
+        self.tabs = QTabWidget()
+        self.tabs.setDocumentMode(True)
+        self.tabs.setTabsClosable(True)
+        self.tabs.tabCloseRequested.connect(self.close_current_tab)
+        self.tabs.setStyleSheet("QTabBar::tab { height: 30px; width: 120px; background-color: #282a36; color: #f8f8f2; border: 1px solid #44475a; border-radius: 4px; padding: 5px; } QTabBar::tab:selected { background-color: #6272a4; }")
+
+        banner = QWidget()
+        banner_layout = QVBoxLayout()
+        banner.setStyleSheet("background-color: #282a36; border: 5px solid #ff007f; border-radius: 10px; padding: 10px;")
+
+        banner_label = QLabel("Welcome to Salem Corp. Browser")
+        banner_label.setStyleSheet("color: #ffffff; font-size: 24px; font-weight: bold; text-align: center;")
+        banner_label.setAlignment(Qt.AlignCenter)
+
+        self.browser = QWebEngineView()
+        self.browser.setUrl(QUrl("https://www.google.com")) 
+        self.browser.setStyleSheet("border: 5px solid #ff007f; border-radius: 5px;") 
+
+        banner_layout.addWidget(banner_label)
+        banner_layout.addWidget(self.browser)
+        banner.setLayout(banner_layout)
+
+        self.add_new_tab(QUrl("https://www.google.com"), "Home")
+
+        nav_bar = QWidget()
+        nav_layout = QHBoxLayout()
+        nav_bar.setStyleSheet("background-color: #282a36; padding: 5px; border: 1px solid #44475a;")
+
+        self.url_bar = QLineEdit()
+        self.url_bar.setPlaceholderText("URL мекенжай енгізіңіз...")
+        self.url_bar.setFixedHeight(25) 
+        self.url_bar.setMinimumWidth(300)
+        self.url_bar.returnPressed.connect(self.navigate_to_url)
+        self.url_bar.setStyleSheet("background-color: #44475a; color: #f8f8f2; border: 1px solid #6272a4; border-radius: 5px; padding: 5px;")
+
+        back_btn = QPushButton("◀Қайту")
+        back_btn.setFixedSize(80, 25)  
+        back_btn.clicked.connect(self.navigate_back)
+        back_btn.setStyleSheet(self.button_style())
+
+        forward_btn = QPushButton("Алға▶")
+        forward_btn.setFixedSize(80, 25)  
+        forward_btn.clicked.connect(self.navigate_forward)
+        forward_btn.setStyleSheet(self.button_style())
+
+        refresh_btn = QPushButton("Жаңарту🔄")
+        refresh_btn.setFixedSize(80, 25) 
+        refresh_btn.clicked.connect(self.refresh_page)
+        refresh_btn.setStyleSheet(self.button_style())
+
+        home_btn = QPushButton("Үй🏠")
+        home_btn.setFixedSize(80, 25) 
+        home_btn.clicked.connect(self.navigate_home)
+        home_btn.setStyleSheet(self.button_style())
+
+        new_tab_btn = QPushButton("Жаңа вкладка➕")
+        new_tab_btn.setFixedSize(80, 25)
+        new_tab_btn.clicked.connect(self.open_new_tab)
+        new_tab_btn.setStyleSheet(self.button_style())
+
+        pip_btn = QPushButton("PiP")
+        pip_btn.setFixedSize(80, 25)
+        pip_btn.clicked.connect(self.enable_picture_in_picture)
+        pip_btn.setStyleSheet(self.button_style())
+
+        add_block = QPushButton("Add blocker")
+        add_block.setFixedSize(80, 20)
+        add_block.clicked.connect(self.enable_add_block)
+        add_block.setStyleSheet(self.button_style())
+
+        anti_tracker = QPushButton("Anti Tracker")
+        anti_tracker.setFixedSize(80, 20)
+        anti_tracker.clicked.connect(self.enable_anti_tracker)
+        anti_tracker.setStyleSheet(self.button_style())
+
+        user_account = QPushButton("Пайдаланушы Есептік жазбасы")
+        user_account.setFixedSize(50, 20)
+        user_account.clicked.connect(self.enable_user_account)
+        user_account.setstyleSheet(self.button_style)
+
+        nav_layout.addWidget(back_btn)
+        nav_layout.addWidget(forward_btn)
+        nav_layout.addWidget(refresh_btn)
+        nav_layout.addWidget(home_btn)
+        nav_layout.addWidget(new_tab_btn)
+        nav_layout.addWidget(pip_btn)
+        nav_layout.addWidget(self.url_bar)
+        nav_layout.addWidget(user_account)
+        nav_layout.addWidget(add_block)
+        nav_layout.addwidget(anti_tracker)
+
+        nav_bar.setLayout(nav_layout)
+
+        central_widget = QWidget()
+        central_layout = QVBoxLayout()
+        central_layout.addWidget(nav_bar)
+        central_layout.addWidget(self.tabs)
+
+        central_widget.setLayout(central_layout)
+        self.setCentralWidget(central_widget)
+
+    def button_style(self):
+        return (
+            "background-color: #6272a4; color: #f8f8f2; border: 1px solid #ff79c6; border-radius: 5px; "
+            "padding: 5px; font-weight: bold;"
+        )
+
+    def navigate_home(self):
+        self.url_bar.setText("file:///F:/SalemSOFTWARE/homepageSalem.html")
+        self.navigate_to_url()
+
+    def navigate_to_url(self):
+        url = self.url_bar.text()
+        if not url.startswith("http://") and not url.startswith("https://"):
+            url = "file://" + url
+        current_browser = self.tabs.currentWidget()
+        if current_browser:
+            current_browser.setUrl(QUrl(url))
+
+    def on_search_entered(self):
+        """Обработчик ввода поискового запроса"""
+        search_query = self.search_input.text()
+        if search_query:
+            search_url = f"https://www.google.com/search?q={search_query}"
+            self.url_bar.setText(search_url)
+            self.navigate_to_url()
+
+    def on_search_button_clicked(self):
+        """Обработчик нажатия на кнопку поиска"""
+        search_query = self.search_input.text()
+        if search_query:
+            search_url = f"https://www.google.com/search?q={search_query}"
+            self.url_bar.setText(search_url)
+            self.navigate_to_url()
+
+    def handle_link_click(self, link):
+        """Обработчик кликов по гиперссылкам"""
+        if link.startswith("file://"):
+            self.url_bar.setText(link)
+            self.navigate_to_url()
+        elif link.startswith("http://") or link.startswith("https://"):
+            self.url_bar.setText(link)
+            self.navigate_to_url()
+        else:
+            pass
+        
+    def navigate_back(self):
+        current_browser = self.tabs.currentWidget()
+        if current_browser:
+            current_browser.back()
+
+    def navigate_forward(self):
+        current_browser = self.tabs.currentWidget()
+        if current_browser:
+            current_browser.forward()
+
+    def refresh_page(self):
+        current_browser = self.tabs.currentWidget()
+        if current_browser:
+            current_browser.reload()
+
+    def add_new_tab(self, qurl=None, label="Жаңа вкладка"):
+        if qurl is None:
+            qurl = QUrl("https://www.google.com")
+        browser = QWebEngineView()
+        browser.setUrl(qurl)
+        self.tabs.addTab(browser, label)
+        self.tabs.setCurrentWidget(browser)
+
+    def open_new_tab(self):
+        self.add_new_tab()
+
+    def close_current_tab(self, index):
+        if self.tabs.count() > 1:
+            self.tabs.removeTab(index)
+
+    def enable_picture_in_picture(self):
+        current_browser = self.tabs.currentWidget()
+        if current_browser:
+            script = """
+            const video = document.querySelector('video');
+            if (video) {
+                if (document.pictureInPictureEnabled) {
+                    video.requestPictureInPicture().catch(error => {
+                        console.error('Error in PiP:', error);
+                    });
+                }
+            }
+            """
+            current_browser.page().runJavaScript(script)
+
+    def enable_add_block(self):
+        """Create and display a new block dynamically."""
+        self.block_count += 1
+        block_label = QLabel(f"Block {self.block_count}")
+        block_label.setAlignment(Qt.AlignCenter)
+        block_label.setStyleSheet("background-color: lightgreen; padding: 8px;")
+        self.block_container.addWidget(block_label)
+
+    def enable_user_account(self):
+        """Open the user account dialog."""
+        dialog = UserAccountDialog()
+        dialog.exec_()
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = SalemBrowser()
+    window.show()
+    sys.exit(app.exec_())
+
+
+
+
+    #3------------------------------------------------------------------------------------------------>
+
+
+
+    self.setWindowIcon(QIcon("img/SalemLogo.ico"))
+        self.setStyleSheet("background-color: #1a1a1a;")
+        self.setWindowTitle("Salem Corp. Browser")
+        self.setGeometry(100, 100, 1200, 800)
+        self.setStyleSheet("""
+    QWidget {
+        background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1,
+            stop:0 #a1c4fd, stop:1 #c2e9fb);
+        color: #000000;
+    }
+""")
+
+        self.tabs = QTabWidget()
+        self.tabs.setDocumentMode(True)
+        self.tabs.setTabsClosable(True)
+        self.tabs.tabCloseRequested.connect(self.close_current_tab)
+        self.tabs.setStyleSheet("QTabBar::tab { height: 30px; width: 120px; background-color: #282a36; color: #f8f8f2; border: 1px solid #44475a; border-radius: 4px; padding: 5px; } QTabBar::tab:selected { background-color: #6272a4; }")
+
+        self.title_label = QLabel("S/alem Corp. Browser")
+        self.title_label.setStyleSheet("color: rgb(48, 211, 252); font-weight: bold; padding: 10px;")
+
+        banner = QWidget()
+        banner_layout = QVBoxLayout()
+        banner.setStyleSheet("""
+    background: rgba(40, 42, 54, 0.5); /* Полупрозрачный фон */
+    border: 2px solid rgba(255, 0, 127, 0.6); /* Полупрозрачная граница */
+    border-radius: 15px;
+    padding: 15px;
+    backdrop-filter: blur(12px); /* Размытие фона */
+    transition: all 0.3s ease-in-out;
+""")
+        
+        
+        self.add_new_tab(QUrl.fromLocalFile("C:/Users/BAGDAULET PC/Desktop/SalemSOFTWARE4535/homepageSalem.html"), "Үй")
+
+        nav_bar = QWidget()
+        nav_layout = QHBoxLayout()
+        nav_bar.setStyleSheet("background-color: #282a36; padding: 5px; border: 1px solid #44475a;")
+
+        self.url_bar = QLineEdit()
+        self.url_bar.setPlaceholderText("URL мекенжай енгізіңіз...")
+        self.url_bar.setFixedHeight(25)
+        self.url_bar.setMinimumWidth(300)
+        self.url_bar.returnPressed.connect(self.navigate_to_url)
+
+        self.url_bar.setStyleSheet("""
+    QLineEdit {
+        background-color: #44475a;
+        color: #f8f8f2;
+        border: 1px solid #6272a4;
+        border-radius: 5px;
+        padding: 5px;
+        transition: all 0.3s ease-in-out; /* Плавный эффект */
+    }
+    
+    QLineEdit:hover {
+        border: 1px solid #8be9fd; /* Голубое свечение при наведении */
+        background-color: #505a78;
+    }
+    
+    QLineEdit:focus {
+        border: 1px solid #ff79c6; /* Розовое свечение при фокусе */
+        background-color: #6272a4;
+    }
+""")
+
+
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/styleNews.css">
+    <title>Salem Homepage</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: url('img/MinPhoto.png') no-repeat center center fixed;
+            background-size: cover;
+            color: rgb(39, 39, 39);
+
+        }
+
+       
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .container h1 {
+    font-size: 75px;
+    margin-top: -25px;
+    margin-bottom: 40px;
+    text-align: center;
+    cursor: pointer;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8),
+                 0 0 20px rgba(5, 160, 199, 0.8),
+                 0 0 30px rgba(5, 160, 199, 0.8);
+    background: linear-gradient(120deg, 
+        white 0%, 
+        white 10%, 
+        black 10%, 
+        black 20%, 
+        white 20%, 
+        white 30%);
+    background-size: 50% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: stripes 6s ease-in-out infinite;
+}
+
+@keyframes stripes {
+    0% {
+        background-position: 200% 0;
+    }
+    50% {
+        background-position: 50% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+        .search-bar {
+            display: flex;
+            margin-bottom: 30px;
+        }
+        .search-bar img {
+            padding: 5px 5px;
+            height: 50px;
+            width: 50px;
+            left: 20px;
+        }
+        .search-bar input {
+            width: 400px;
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #444;
+            border-radius: 5px 0 0 5px;
+            outline: none;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+        }
+        .search-bar button {
+            padding: 10px;
+            border: none;
+            height: 44px;
+            width: auto;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+            background: #ff007c;
+            color: white;
+            font-size: 16px;
+        }
+        .search-bar button:hover {
+            background: #ff4da6;
+        }
+        .icons {
+        display: flex;
+        gap: 60px;
+    }
+
+    .icon-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 500px; /* Размер кнопки */
+        height: 60px;
+        background-color: #4e4e4e; /* Фон кнопки */
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .icon-btn img {
+        width: 40px;
+        height: 40px;
+    }
+
+    .icon-btn:hover {
+        background-color: #555;
+    }
+
+.menu-btn:hover {
+    background-color: #555;
+}
+
+#weather {
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+        #weather-widget, #news-widget {
+            width: 80%;
+            max-width: 1000px;
+            margin-top: 20px;
+        }
+
+/* Затемненный фон с размытием */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(12px);
+    z-index: 9;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.overlay.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+/* Панель настроек */
+.settings-container {
+    position: fixed;
+    top: 50%;
+    right: -806px;
+    width: 743px;
+    height: 80%;
+    background: rgba(255, 255, 255, 0.08);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(15px) saturate(1.5);
+    -webkit-backdrop-filter: blur(15px) saturate(1.5);
+    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.6);
+    color: white;
+    transition: right 0.5s ease-in-out, transform 0.3s ease-in-out;
+    padding: 30px;
+    z-index: 10;
+    border-radius: 15px 0 0 15px;
+    overflow: hidden;
+    transform: translateY(-50%);
+}
+
+.settings-container.active {
+    right: 0;
+    transform: translateY(-50%) scale(1.05);
+}
+
+/* Ссылки */
+a {
+    text-decoration: none;
+    color: white;
+    transition: color 0.3s ease-in-out;
+}
+
+a:hover {
+    color: #8be9fd;
+}
+
+/* Улучшенный стиль кнопок */
+button {
+    background: linear-gradient(135deg, #0ff0e4, #068ce6);
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0px 4px 10px rgba(0, 255, 127, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Эффект увеличения и свечения */
+button:hover {
+    background: linear-gradient(135deg, #f11515, #da6d07);
+    box-shadow: 0px 6px 15px rgba(0, 255, 127, 0.5);
+    transform: scale(1.05);
+}
+
+/* Картинка внутри кнопки */
+button img {
+    width: 22px;
+    height: 22px;
+}
+
+.background-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.background-option {
+    width: 80px;
+    height: 60px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.background-option img {
+    width: 136px;
+    height: 83px;
+    object-fit: cover;
+    border-radius: 2px;
+}
+
+
+.background-option.selected {
+    border: 2px solid #00ffcc; /* Подсветка выбранного фона */
+}
+
+
+    </style>
+</head>
+<body>
+
+    <div class="overlay" id="overlay"></div>
+
+    <div class="container">
+        <h1>Salem Explorer</h1>
+<main class="Browser">
+        <div class="search-bar">
+            <img src="img/SalemLogo.ico" type="image/ico" style="margin-top: -3px;width: 44px;height: 41px;margin-bottom: 107px;margin-right: -5px;">
+            <input type="text" id="search-input" placeholder="Осы жерден іздеу..." style="height: 20.933px;width: 395px;"> 
+            <button id="search-button">🔍</button>
+        </div>
+        <div class="icons" style="width: 69px;margin-right: 48px;">
+            <a href="https://kaspi.kz/" class="icon-btn" style="width: 58px;margin-left: -144px;padding-top: 7px;padding-bottom: 8px;padding-right: 14px;padding-left: 13px;margin-right: 52px;">
+                <img src="img/600px-Logo_of_Kaspi_bank.png" alt="Kaspi services" style="margin-left: 0px;width: 54px;" >
+            </a>
+            <a href="https://www.youtube.com" class="icon-btn" style="margin-left: -9px;width: 87px;padding-top: 9px;padding-bottom: 7px;padding-left: 9px;padding-right: 11px;">
+                <img src="img/icons8-youtube-500.png" alt="YouTube" style="width: 61px;height: 58px;margin-left: -5px;margin-right: -2px;padding-left: 4px;">
+            </a>
+            <a href="https://www.facebook.com" class="icon-btn" style="margin-left: 36px;width: 90px;padding-left: 7px;padding-top: 9px;padding-bottom: 7px;padding-right: 15px;">
+                <img src="img/icons8-facebook-144.png" alt="Facebook" style="width: 52px;margin-right: 0px;margin-left: 8px;height: 48px;">
+            </a>
+            <a href="https://www.discord.com" class="icon-btn" style="margin-right: 19px;margin-left: 34px;width: 90px;padding-top: 11px;padding-bottom: 4px;padding-right: 14px;padding-left: 10px;">
+                <img src="img/icons8-discord-100.png" alt="Discord" style="width: 52px;margin-left: 7px;">
+            </a>
+            <a href="https://chatgpt.com/" class="icon-btn" style="width: 96px;margin-left: 6px;margin-right: -22px;padding-top: 12px;padding-bottom: 6px;padding-right: 15px;padding-left: 33px;">
+                <img src="img/icons8-chatgpt-192.png" alt="ChatGPT" style="margin-left: -16px;margin-right: 13px;padding-top: 1px;padding-right: -1px;padding-left: 9px;padding-bottom: 6px;">
+            </a>
+            <a href="https://egov.kz/" class="icon-btn" style="padding-top: 9px;padding-bottom: 9px;padding-left: 13px;padding-right: 26px;margin-left: 51px;width: 495px;">
+                <img src="img/Egov.png" alt="E-gov services" style="padding-top: 6px;padding-bottom: 6px;width: 50px;margin-left: 6px;">
+            </a>
+
+            <button id="addButton" class="icon-btn" style="background-color: #4CAF50; border-radius: 10px;padding-bottom: 4px;padding-top: 4px;padding-right: 32px;padding-left: 35px;margin-top: 10px;">
+                ➕
+            </button>
+            <audio id="notificationSound" src="sounds/archivo (1).mp3"></audio>
+        </div>
+    </div>
+
+    
+
+    <div class="weather-widget" style="margin-right: 1px;margin-left: 31px;margin-top: -8px;margin-bottom: 50px;">
+        <link rel="stylesheet" href="css/stylesWeather.css">
+        <h3>Онлайн Salem AUA-RAYI</h3>
+        <input type="text" id="city" placeholder="Введите город">
+        <button onclick="getWeather()">Получить погоду</button>
+        <div class="weather-container" id="weather"></div>
+         
+        <script src="js/weatherActual.js"></script>
+      </div>
+      <div id="toastContainer"></div>
+
+<div class="news-container" style="padding-right: 39px;width: 940px;margin-left: 39px; margin-bottom:  30px;">
+    <h2>Новости Казахстана</h2>
+    <div class="news-list" id="newsContainer"></div>
+</div>
+
+    <button class="menu-btn" onclick="toggleSettings()"style="margin-bottom: 227px;margin-top: -142px;margin-right: -79px;">⚙</button>
+
+    <div class="settings-container" id="settings-container" style="margin-left: 922px;margin-top: -1px;margin-right: 24px;margin-bottom: -55px;padding-bottom: 155px;">
+        <div class="settings-box">
+            <h2>Қолданушы Баптаулары</h2>
+            <p>Осы жерде сіз браузердің баптауларымен есептік жазбаны өзгерте аласыз.</p>
+                <button onclick="closeSettings()">Жабу</button>
+            <a href="Account.html">
+                <button>Есептік жазба</button>
+            </a>
+            <a href="storage_settings_link_here">
+                <button>Қойма</button>
+            </a>
+            <a href="downloads_settings_link_here">
+                <button>Жүктелген файлдар</button>
+            </a>
+            <a href="advanced_settings_link_here">
+                <button>Қосымша баптаулар</button>
+            </a>
+            <a href="ad_blocker_settings_link_here">
+                <button>Жарнаманы блоктау</button>
+            </a>
+            <a href="extra_features_settings_link_here">
+                <button>Қосымша мүмкіндіктер</button>
+            </a>
+            <a href="https://chatgpt.com">
+                <button>
+                    <img src="img/icons8-chatgpt-192.png" style="width: 20px; height: 20px; margin-right: 8px;">
+                    ChatGPT-ден көмек сұрау
+                </button>
+            </a>
+            <a href="Personalization.html">
+                <button>Сәндеу</button>
+            </a>
+            <div class="background-options" id="background-option"></div>
+            <h3>Фонды таңдау</h3>
+            <div class="background-option img" id="backgroundOptions"></div>
+               <img src="img/BigAlmaty.jpg" alt="Big Almaty" style="width: 90px; height: 60px;"><input type="radio" name="background" value="img/BigAlmaty.jpg">
+               <img src="img/GreenField.jpg" alt="Green Field" style="width: 90px; height: 60px;"><input type="radio" name="background" value="img/GreenField.jpg">
+               <img src="img/MinPhoto.png" alt="Minimalictic" style="width: 90px; height: 60px;"><input type="radio" name="background" value="img/GreenField.jpg">
+               <img src="img/Степь.jpeg" alt="Степь" style="width: 90px; height: 60px;"><input type="radio" name="background" value="img/Степь.jpeg">
+               <img src="img/Алматы.jpg" alt="Almaty" style="width: 90px; height: 60px;"><input type="radio" name="background" value="img/Алматы.jpg">
+            </div>
+</main>
+
+
+
+
+
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+        let hoverSound = document.getElementById("hoverSound");
+        let buttons = document.querySelectorAll(".icon-btn");
+
+        buttons.forEach(button => {
+            button.addEventListener("mouseenter", function () {
+                hoverSound.currentTime = 0;
+                hoverSound.play();
+            });
+        });
+    });
+
+
+        function toggleSettings() {
+    document.getElementById('settings-container').classList.toggle('active');
+    document.getElementById('overlay').classList.toggle('active');
+}
+
+function closeSettings() {
+    document.getElementById('settings-container').classList.remove('active');
+    document.getElementById('overlay').classList.remove('active');
+}
+
+const contentDiv = document.getElementById('content');
+
+// Get the elements
+const searchInput = document.getElementById('search-input');
+const searchButton = document.getElementById('search-button');
+
+// Search function
+document.getElementById("search-button").addEventListener("click", function() {
+            let query = document.getElementById("search-input").value;
+            if (query) {
+                let searchUrl = "https://www.google.com/search?q=" + encodeURIComponent(query);
+                window.location.href = searchUrl;
+            }
+        });
+        
+        document.getElementById("search-input").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                document.getElementById("search-button").click();
+            }
+        });
+
+// Event listener for search button click
+searchButton.addEventListener('click', performSearch);
+
+// Event listener for "Enter" key press in search input
+searchInput.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        performSearch();
+    }
+});
+
+
+
+
+    </script>
+    <script src="js/background.js"></script>
+    <script src="js/script.js"></script>
+    <script src="js/notificaton.js"></script>
+    <script src="js/weatherNotify.js"></script> 
+    <script src="scripts/settings.js"></script>
+    <script src="scripts/main.js"></script>
+    <script src="scripts/renderer.js"></script>
+    <script src="scripts/service-worker.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+<div class="background-option img" id="backgroundOptions"></div>
+               <img src="img/BigAlmaty.jpg" alt="Big Almaty" style="width: 90px; height: 60px;"><input type="radio" name="background" value="img/BigAlmaty.jpg">
+               <img src="img/GreenField.jpg" alt="Green Field" style="width: 90px; height: 60px;"><input type="radio" name="background" value="img/GreenField.jpg">
+               <img src="img/MinPhoto.png" alt="Minimalictic" style="width: 90px; height: 60px;"><input type="radio" name="background" value="img/GreenField.jpg">
+               <img src="img/Степь.jpeg" alt="Степь" style="width: 90px; height: 60px;"><input type="radio" name="background" value="img/Степь.jpeg">
+               <img src="img/Алматы.jpg" alt="Almaty" style="width: 90px; height: 60px;"><input type="radio" name="background" value="img/Алматы.jpg">
+            </div>

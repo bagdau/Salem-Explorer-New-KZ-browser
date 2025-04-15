@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Experimental</title>
+    <style>
+        body {
+          background: #1e1e1e no-repeat center center;
+          background-size: contain; /* Теперь вся картинка видна */
+          height: 100vh;
+          transition: background 0.5s ease-in-out;
+        }
+
+        .settings-container {
+            position: fixed;
+            top: 10px;
+            left: -550px;
+            height: 1083px;
+            width: 500px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(15px) saturate(1.5);
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.6);
+            color: white;
+            transition: left 0.5s ease-in-out;
+            padding: 20px;
+            z-index: 10;
+            border-radius: 0 15px 15px 0;
+            overflow: hidden;
+        }
+
+        .settings-container.active {
+            left: 10px;
+        }
+
+        .background-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .background-option {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .background-option img {
+            width: 363px;
+            height: 200px;
+            border-radius: 5px;
+            border: 2px solid transparent;
+            transition: 0.3s;
+        }
+
+        .background-option.selected img {
+            border-color: lime;
+        }
+
+        .background-option input[type="radio"] {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            width: 42px;
+            height: 38px;
+        }
+
+        /* Кнопка Фона */
+        .settings-button {
+            position: fixed;
+            top: 10px;
+            left: 720px;
+            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: left 0.5s ease-in-out;
+        }
+
+        /* Временное перемещение кнопки к меню */
+        .settings-button.move {
+            left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay" id="overlay"></div>
+
+    <div class="settings-container" id="settings-container">
+        <label>Фон суретін таңдаңыз:</label>
+        <div class="background-options" id="backgroundOptions"></div>
+        <button onclick="applySettings()">Қолдану</button>
+    </div>
+
+    <button class="settings-button" id="settingsButton" onclick="toggleSettings()">Фон</button>
+
+    <script>
+        const settingsContainer = document.getElementById('settings-container');
+        const settingsButton = document.getElementById('settingsButton');
+        const overlay = document.getElementById('overlay');
+
+        function toggleSettings() {
+            if (settingsContainer.classList.contains('active')) {
+                // 1. Кнопка временно прилипает
+                settingsButton.classList.add('move');
+                
+                // 2. Закрываем меню с задержкой
+                setTimeout(() => {
+                    settingsContainer.classList.remove('active');
+                }, 500);
+
+                // 3. Кнопка возвращается на место через 1 секунду
+                setTimeout(() => {
+                    settingsButton.classList.remove('move');
+                }, 1000);
+            } else {
+                // Открываем меню сразу
+                settingsContainer.classList.add('active');
+            }
+        }
+
+        function closeSettings() {
+            toggleSettings();
+        }
+
+        overlay.addEventListener('click', closeSettings);
+
+        const backgrounds = [
+            'img/Степь.jpeg',
+            'img/GreenField.jpg',
+            'img/BigAlmaty.jpg',
+            'img/MinPhoto.png',
+            'img/Оқжетпес.jpg'
+        ];
+
+        const backgroundOptions = document.getElementById('backgroundOptions');
+
+        backgrounds.forEach(src => {
+            const div = document.createElement('div');
+            div.classList.add('background-option');
+            div.innerHTML = `
+                <input type="radio" name="background" value="${src}">
+                <img src="${src}" alt="Фон">
+            `;
+            div.onclick = () => setBackground(src, div);
+            backgroundOptions.appendChild(div);
+        });
+
+        function setBackground(src, element) {
+            localStorage.setItem('selectedBackground', src);
+            document.querySelectorAll('.background-option').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+            applySettings();
+        }
+
+        function applySettings() {
+            const selectedBackground = localStorage.getItem('selectedBackground');
+            if (selectedBackground) {
+                document.body.style.backgroundImage = `url('${selectedBackground}')`;
+                document.body.style.backgroundRepeat = "no-repeat";
+                document.body.style.backgroundSize = "cover";
+                document.body.style.backgroundPosition = "center";
+            }
+        }
+
+        // При загрузке страницы применяем фон, если он есть в localStorage
+        window.onload = applySettings;
+    </script>
+</body>
+</html>

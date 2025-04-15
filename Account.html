@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кіру / Тіркелу</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1e1e2e, #44475a);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            width: 350px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        .form-box h2 {
+            color: white;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: none;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            transition: 0.3s;
+        }
+        input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.3);
+        }
+        .btn {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            background: #ff79c6;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn:hover {
+            background: #bd93f9;
+        }
+        .social-buttons button {
+            margin: 5px;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .google { background: #db4437; color: white; }
+        .facebook { background: #4267B2; color: white; }
+        .github { background: #333; color: white; }
+        .apple { background: #000; color: white; }
+        .google:hover, .facebook:hover, .github:hover, .apple:hover { opacity: 0.8; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="form-box" id="loginBox">
+            <h2>Есептік жазбаға кіру</h2>
+            <input type="email" id="loginEmail" placeholder="Email енгізіңіз" required autocomplete="email">
+            <input type="password" id="loginPassword" placeholder="Құпия сөз енгізіңіз" required autocomplete="current-password">
+            <button class="btn" onclick="login()">Кіру</button>
+            <p>Есептік жазбаңыз жоқ па? <a href="#" onclick="toggleForms()">Тіркелу</a></p>
+            <div class="social-buttons">
+                <button class="google" onclick="socialLogin('google')">Google</button>
+                <button class="facebook" onclick="socialLogin('facebook')">Facebook</button>
+                <button class="github" onclick="socialLogin('github')">GitHub</button>
+                <button class="apple" onclick="socialLogin('apple')">Apple</button>
+            </div>
+            <label>
+                <input type="checkbox" id="rememberMe"> Мені есте сақтау
+            </label>
+        </div>
+        <div class="form-box hidden" id="registerBox">
+            <h2>Тіркелу</h2>
+            <input type="text" id="registerName" placeholder="Атыңызды енгізіңіз" required>
+            <input type="email" id="registerEmail" placeholder="Email енгізіңіз" required autocomplete="email">
+            <input type="password" id="registerPassword" placeholder="Құпия сөз енгізіңіз" required autocomplete="new-password">
+            <input type="file" id="profilePic" accept="image/*" onchange="previewImage(event)">
+            <img id="profilePreview" src="#" alt="Алдын ала қарау" class="hidden">
+            <div class="g-recaptcha" data-sitekey="YOUR_RECAPTCHA_SITE_KEY"></div>
+            <button class="btn" onclick="register()">Тіркелу</button>
+            <p>Аккаунтыңыз бар ма? <a href="#" onclick="toggleForms()">Кіру</a></p>
+        </div>
+    </div>
+    <script>
+        function toggleForms() {
+            document.getElementById("loginBox").classList.toggle("hidden");
+            document.getElementById("registerBox").classList.toggle("hidden");
+        }
+
+        function previewImage(event) {
+            let reader = new FileReader();
+            reader.onload = function() {
+                let img = document.getElementById("profilePreview");
+                img.src = reader.result;
+                img.classList.remove("hidden");
+            }
+            reader.readAsDataURL(event.target.files[0]);
+        }
+
+        function encryptPassword(password) {
+            return btoa(password); 
+        }
+
+        function login() {
+            let email = document.getElementById("loginEmail").value;
+            let password = encryptPassword(document.getElementById("loginPassword").value);
+            localStorage.setItem("rememberedEmail", email);
+            alert("Кіру сәтті аяқталды!");
+        }
+
+        function register() {
+            let email = document.getElementById("registerEmail").value;
+            let password = encryptPassword(document.getElementById("registerPassword").value);
+            let recaptchaResponse = grecaptcha.getResponse();
+            if (!recaptchaResponse) {
+                alert("CAPTCHA растауын өтіңіз!");
+                return;
+            }
+            localStorage.setItem("registeredEmail", email);
+            alert("Тіркелу сәтті аяқталды!");
+        }
+
+        function socialLogin(platform) {
+            alert(platform + " арқылы кіру орындалды!");
+        }
+    </script>
+</body>
+</html>
