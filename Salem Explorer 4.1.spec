@@ -5,7 +5,7 @@ a = Analysis(
     ['main.py'],
     pathex=[],
     binaries=[],
-    datas=[('C:\\\\Users\\\\BAGDAULET PC\\\\Desktop\\\\SalemSOFTWARE4535\\\\history.html', '.'), ('C:\\\\Users\\\\BAGDAULET PC\\\\Desktop\\\\SalemSOFTWARE4535\\\\Viewer.html', '.'), ('C:\\\\Users\\\\BAGDAULET PC\\\\Desktop\\\\SalemSOFTWARE4535\\\\history_data.json', '.')],
+    datas=[('', '.'), ('', '.'), ('', '.')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
@@ -36,5 +36,5 @@ exe = EXE(
     codesign_identity=None,
     entitlements_file=None,
     uac_admin=True,
-    icon=['C:\\Users\\BAGDAULET PC\\Desktop\\SalemSOFTWARE4535\\img\\icons\\DES.ico'],
+    icon=[''],
 )
