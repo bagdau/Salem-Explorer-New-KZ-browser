@@ -54,7 +54,7 @@
 - 💬 Telegram: [@theBagdauletProgrammist](https://t.me/theBagdauletProgrammist)  
 - 🐙 GitHub: [github.com/bagdau](https://www.github.com/bagdau)  
 - 💼 LinkedIn: [linkedin.com/in/salem-startup-corporation-bagdaulet-koptileu-a55627360](https://www.linkedin.com/in/salem-startup-corporation-bagdaulet-koptileu-a55627360)  
-- 📧 Email: bagdaulet.koptileu@salemcorp.kz *(мысал үшін)*
+- 📧 Email: salemcorporation0@gmail.com
 
 ---
 
