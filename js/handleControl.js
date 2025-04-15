@@ -1,4 +1,4 @@
-const apiKey = 'api_live_ZOcy7l5KQhnKaCKedaAj7fpXfe0G0DW79WmNgIHftp1P8mmh0vX';  // Вставьте ваш реальный ключ API сюда
+const apiKey = 'СЕНІҢ_ЕБАТЬ_КІЛТІҢ';  // Вставьте ваш реальный ключ API сюда
 
 async function fetchNews() {
     try {
