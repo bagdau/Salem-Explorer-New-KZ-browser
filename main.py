@@ -45,13 +45,13 @@ class WindowCompositionAttributeData(ctypes.Structure):
 
     def enable_acrylic(hwnd):
         accent_policy = AccentPolicy()
-        accent_policy.nAccentState = 3  # ACCENT_ENABLE_BLURBEHIND
+        accent_policy.nAccentState = 3 
         accent_policy.nFlags = 2
-        accent_policy.nColor = 0x99FFFFFF  # Цвет и уровень прозрачности
+        accent_policy.nColor = 0x99FFFFFF
         accent_policy.nAnimationId = 0
 
         data = WindowCompositionAttributeData()
-        data.nAttribute = 19  # WCA_ACCENT_POLICY
+        data.nAttribute = 19  
         data.pData = byref(accent_policy)
         data.ulDataSize = ctypes.sizeof(accent_policy)
 
@@ -62,8 +62,8 @@ class SalemBrowser(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setAttribute(Qt.WA_TranslucentBackground, True)
-        hwnd = self.winId().__int__()  # Получаем HWND окна
-        enable_acrylic(hwnd)  # Включаем Acrylic Blur
+        hwnd = self.winId().__int__()  
+        enable_acrylic(hwnd) 
 
         self.setWindowIcon(QIcon("img/icons/DES.ico"))
         self.setStyleSheet("background-color: #1a1a1a;")
@@ -129,7 +129,7 @@ class SalemBrowser(QMainWindow):
 """)
 
 
-        # Buttons with fixed sizes
+        
         back_btn = self.create_nav_button("◀", self.navigate_back)
         forward_btn = self.create_nav_button("▶", self.navigate_forward)
         refresh_btn = self.create_nav_button("↻", self.refresh_page)
@@ -141,7 +141,7 @@ class SalemBrowser(QMainWindow):
         menu_btn = self.create_nav_button("☰", self.open_menu)
 
         self.downloads_panel = QListWidget()
-        self.downloads_panel.hide()  # Скрываем, пока не нужна
+        self.downloads_panel.hide() 
 
 
         downloads_btn = QPushButton("📥")
@@ -154,7 +154,7 @@ class SalemBrowser(QMainWindow):
         nav_layout.addWidget(open_file_btn)
 
 
-        # Adding widgets to navigation bar
+      
         nav_layout.addWidget(back_btn)
         nav_layout.addWidget(forward_btn)
         nav_layout.addWidget(refresh_btn)
@@ -177,11 +177,11 @@ class SalemBrowser(QMainWindow):
         central_widget.setLayout(central_layout)
         self.setCentralWidget(central_widget)
 
-        # Подключаем обработку загрузок
+     
         self.tabs.currentWidget().page().profile().downloadRequested.connect(self.handle_download_request)
 
-        # Open initial tab
-        # Open initial tab
+     
+      
         self.add_new_tab(QUrl("https://start.duckduckgo.com/"), "Шаңырақ")
         self.set_user_agent()
 
@@ -191,28 +191,27 @@ class SalemBrowser(QMainWindow):
         Устанавливает кастомный User-Agent и включает JavaScript.
         """
 
-        # Меняем User-Agent на Firefox (можно заменить на другой)
+
         custom_user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
 
 
         profile = self.tabs.currentWidget().page().profile()
         profile.setHttpUserAgent(custom_user_agent)
 
-        # Включаем JavaScript, WebGL и GPU-ускорение
         settings = self.tabs.currentWidget().settings()
-        settings.setAttribute(QWebEngineSettings.LocalStorageEnabled, True)  # Локальное хранилище
-        settings.setAttribute(QWebEngineSettings.PluginsEnabled, True)  # Плагины
-        settings.setAttribute(QWebEngineSettings.AllowRunningInsecureContent, True)  # Небезопасный контент
-        settings.setAttribute(QWebEngineSettings.JavascriptCanOpenWindows, True)  # Разрешить всплывающие окна
-        settings.setAttribute(QWebEngineSettings.JavascriptCanAccessClipboard, True)  # Доступ к буферу обмена
-        settings.setAttribute(QWebEngineSettings.XSSAuditingEnabled, False)  # Отключить XSS-защиту (иногда мешает)
+        settings.setAttribute(QWebEngineSettings.LocalStorageEnabled, True) 
+        settings.setAttribute(QWebEngineSettings.PluginsEnabled, True) 
+        settings.setAttribute(QWebEngineSettings.AllowRunningInsecureContent, True)  
+        settings.setAttribute(QWebEngineSettings.JavascriptCanOpenWindows, True)  
+        settings.setAttribute(QWebEngineSettings.JavascriptCanAccessClipboard, True)  
+        settings.setAttribute(QWebEngineSettings.XSSAuditingEnabled, False)  
 
 
         print("✅ User-Agent установлен:", custom_user_agent)
         print("✅ JavaScript, WebGL и GPU включены")
 
 
-         # Подключаем обработку загрузок
+     
         self.tabs.currentWidget().page().profile().downloadRequested.connect(self.handle_download_request)
 
     def create_nav_button(self, text, callback):
@@ -345,18 +344,18 @@ class SalemBrowser(QMainWindow):
     def enable_add_block(self):
         print("Жарнаманы бұғаттау іске қосылды")
     
-                 # Check if browser attribute exists, initialize it if needed
+                 
         if not hasattr(self, 'browser'):
             print("Ошибка: browser attribute not initialized!")
             return
 
-                   # Получаем текущую страницу
+           
         page = self.browser.page()
     
-                   # Фильтры для блокировки рекламы (можно расширять)
+                
         ad_keywords = ["ads", "advert", "banner", "popup", "sponsored"]
     
-                   # JavaScript-код для удаления элементов рекламы
+                  
         block_ads_script = """
                 function blockAds() {
                     let adSelectors = ['iframe', 'div', 'span', 'section'];
@@ -373,7 +372,7 @@ class SalemBrowser(QMainWindow):
         blockAds();
         """
     
-          # Выполнение скрипта на загруженной странице
+       
         page.runJavaScript(block_ads_script)
         print("Реклама успешно заблокирована")
         
@@ -413,32 +412,32 @@ class SalemBrowser(QMainWindow):
     def open_menu(self):
         menu = QMenu(self)
 
-        # Функции для меню
+  
         actions = [
-            ("Жаңа қойынды", self.open_new_tab),  # Новая вкладка
-            ("Жаңа терезе", self.open_new_window),  # Новое окно
-            ("Жаңа құпия терезе", self.open_incognito_window),  # Инкогнито
-            ("Журнал", self.show_history),  # История
-            ("Жүктеулер", self.toggle_downloads_panel),  # Загрузки
-            ("Құпиясөздер", self.manage_passwords),  # Менеджер паролей
-            ("Қосымшалар мен тақырыптар", self.open_extensions),  # Расширения
-            ("Басып шығару", self.print_page),  # Печать страницы
-            ("Қалай сақтау", self.save_page),  # Сохранить как...
-            ("Беттен іздеу", self.search_on_page),  # Поиск по странице
-            ("Экран масштабы", self.zoom_menu),  # Масштаб
-            ("Баптаулар", self.open_settings),  # Настройки
-            ("Басқа құралдар", self.open_dev_tools),  # DevTools
-            ("Анықтама", self.open_help),  # Справка
-            ("Шығу", self.close)  # Закрыть браузер
+            ("Жаңа қойынды", self.open_new_tab), 
+            ("Жаңа терезе", self.open_new_window),  
+            ("Жаңа құпия терезе", self.open_incognito_window),
+            ("Журнал", self.show_history),  
+            ("Жүктеулер", self.toggle_downloads_panel),
+            ("Құпиясөздер", self.manage_passwords), 
+            ("Қосымшалар мен тақырыптар", self.open_extensions),  
+            ("Басып шығару", self.print_page), 
+            ("Қалай сақтау", self.save_page), 
+            ("Беттен іздеу", self.search_on_page), 
+            ("Экран масштабы", self.zoom_menu),
+            ("Баптаулар", self.open_settings), 
+            ("Басқа құралдар", self.open_dev_tools),  
+            ("Анықтама", self.open_help),  
+            ("Шығу", self.close)  
     ]
 
-        # Добавляем кнопки в меню
+      
         for label, function in actions:
             action = QAction(label, self)
             action.triggered.connect(function)
             menu.addAction(action)
 
-        # Показываем меню
+      
         menu.exec_(self.mapToGlobal(self.menuBar().pos()))
 
     def open_new_window(self):
@@ -511,17 +510,17 @@ class SalemBrowser(QMainWindow):
            file_extension = os.path.splitext(file_path)[1].lower()
 
            if file_extension == ".pdf":
-               # Открываем PDF через QWebEngineView
+            
               self.add_new_tab(QUrl.fromLocalFile(file_path), f"PDF: {os.path.basename(file_path)}")
 
         elif file_extension in [".html", ".xml", ".yaml", ".yml", ".css", ".js", ".ts"]:
-                # Открываем текстовые файлы в QPlainTextEdit (без зависаний)
+    
             with open(file_path, "r", encoding="utf-8") as file:
                 content = file.read()
             
                 text_editor = QPlainTextEdit()
                 text_editor.setPlainText(content)
-                text_editor.setReadOnly(True)  # Только для просмотра
+                text_editor.setReadOnly(True)  
 
                 index = self.tabs.addTab(text_editor, f"Файл: {os.path.basename(file_path)}")
                 self.tabs.setCurrentIndex(index)
@@ -534,21 +533,21 @@ class SalemBrowser(QMainWindow):
         Открывает загруженные файлы через `viewer.html` или PDF-вьюер.
         """
         if file_type == "pdf":
-              # Открываем PDF в браузере
+          
               self.add_new_tab(QUrl.fromLocalFile(file_path), f"PDF: {os.path.basename(file_path)}")
 
         elif file_type == "text":
-              # Получаем полный путь к `viewer.html`
+        
               local_viewer_path = os.path.abspath("viewer.html")
               local_viewer_url = QUrl.fromLocalFile(local_viewer_path).toString()
 
-              # Кодируем путь к файлу (чтобы работали пробелы и спецсимволы)
+     
               encoded_file_url = quote(QUrl.fromLocalFile(file_path).toString(), safe=':/')
 
-              # Формируем корректный URL
+         
               full_url = f"{local_viewer_url}?file={encoded_file_url}"
 
-              # Открываем `viewer.html` с файлом
+        
               self.add_new_tab(QUrl(full_url), f"Файл: {os.path.basename(file_path)}")
 
         else:
@@ -560,7 +559,7 @@ class SalemBrowser(QMainWindow):
         """Создает контекстное меню, как в Google Chrome."""
         menu = QMenu(self)
 
-        # Добавляем действия
+  
         back_action = QAction("⬅ Назад", self)
         back_action.triggered.connect(self.navigate_back)
 
@@ -579,17 +578,14 @@ class SalemBrowser(QMainWindow):
         devtools_action = QAction("⚙ Открыть DevTools", self)
         devtools_action.triggered.connect(self.open_dev_tools)
 
-        # Добавляем все действия в меню
         menu.addAction(back_action)
         menu.addAction(forward_action)
         menu.addAction(reload_action)
-        menu.addSeparator()  # Разделитель
+        menu.addSeparator() 
         menu.addAction(save_action)
         menu.addAction(copy_link_action)
         menu.addSeparator()
         menu.addAction(devtools_action)
-
-        # Показываем меню там, где кликнули
         menu.exec_(self.mapToGlobal(pos))
 
     def navigate_back(self):
@@ -629,7 +625,7 @@ class SalemBrowser(QMainWindow):
               current_webview.page().setDevToolsPage(QWebEngineView().page())
 
 class FileLoaderThread(QThread):
-    file_loaded = pyqtSignal(str, str, object)  # file_path, file_type, content
+    file_loaded = pyqtSignal(str, str, object)
 
     def __init__(self, file_path):
         super().__init__()
